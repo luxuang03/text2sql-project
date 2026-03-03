@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Add</title>
+</head>
+<body>
+
+<h1>Risultato Add</h1>
+<a href="/">Torna indietro</a>
+
+{% if ok %}
+<p style="color:green">Operazione riuscita (status {{ status }})</p>
+{% else %}
+<p style="color:red">Errore (status {{ status }})</p>
+{% endif %}
+
+<pre>{{ body }}</pre>
+
+<form action="/add" method="post">
+    <textarea name="data_line" rows="4" cols="80"></textarea>
+    <br><br>
+    <button type="submit">Invia un'altra riga</button>
+</form>
+
+</body>
+</html>

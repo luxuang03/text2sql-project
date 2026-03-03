@@ -1,0 +1,5 @@
+Elenca i film del <ANNO>.
+Quali sono i registi presenti su Netflix?
+Elenca tutti i film di fantascienza.
+Quali film sono stati fatti da un regista di almeno <ANNI> anni?
+Quali registi hanno fatto più di un film?

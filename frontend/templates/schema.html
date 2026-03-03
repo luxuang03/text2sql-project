@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Schema</title>
+</head>
+<body>
+
+<h1>Schema del database</h1>
+<a href="/">Torna indietro</a>
+
+{% if error %}
+  <p style="color:red">{{ error }}</p>
+{% endif %}
+
+{% if schema and schema|length > 0 %}
+  <table border="1">
+    <tr>
+      <th>Table</th>
+      <th>Columns</th>
+    </tr>
+    {% for row in schema %}
+      <tr>
+        <td>{{ row["table_name"] }}</td>
+        <td>
+          {% if "table_column" in row %}
+            {{ row["table_column"] }}
+          {% elif "column_name" in row %}
+            {{ row["column_name"] }}
+          {% else %}
+            <!-- chiave non trovata -->
+          {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+{% else %}
+  <p>Nessuna informazione di schema disponibile.</p>
+{% endif %}
+
+</body>
+</html>

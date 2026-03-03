@@ -1,0 +1,180 @@
+import re
+from typing import List, Dict
+
+from ..db import execute_select
+
+
+
+def _normalize_question(q: str) -> str:
+    """
+    Normalizzazione minima per match esatto:
+    - trim
+    - collassa spazi multipli
+    - lower
+    - rimuove punto finale (.)
+    """
+    q = " ".join(q.strip().split())
+    q = q.lower()
+    if q.endswith("."):
+        q = q[:-1]
+    return q
+
+
+def _extract_year_from_question(question: str) -> int:
+    match = re.search(r"\d+", question)
+    if not match:
+        raise ValueError("Nessun anno trovato nella domanda.")
+    return int(match.group(0))
+
+
+def _extract_min_age_from_question(question: str) -> int:
+    match = re.search(r"\d+", question)
+    if not match:
+        raise ValueError("Nessuna età trovata nella domanda.")
+    return int(match.group(0))
+
+
+def _make_item(item_type: str, name: str) -> Dict:
+    """
+    Crea un oggetto nel formato richiesto dal test:
+
+    {
+      "item_type": "...",
+      "properties": [
+        {"property_name": "name", "property_value": name}
+      ]
+    }
+    """
+    return {
+        "item_type": item_type,
+        "properties": [
+            {
+                "property_name": "name",
+                "property_value": name,
+            }
+        ],
+    }
+
+
+def handle_search(question: str) -> List[Dict]:
+    """
+    Gestisce l'endpoint /search.
+
+    Domande supportate:
+    1) 'Elenca i film del <ANNO>.'
+    2) 'Quali sono i registi presenti su Netflix?'
+    3) 'Elenca tutti i film di fantascienza.'
+    4) 'Quali film sono stati fatti da un regista di almeno <ANNI> anni?'
+    5) 'Quali registi hanno fatto più di un film?'
+
+    L'output è SEMPRE una lista di item nel formato:
+
+    {
+      "item_type": "film" | "director",
+      "properties": [
+        {"property_name": "name", "property_value": "<titolo_o_nome>"}
+      ]
+    }
+    """
+
+    original_question = question
+    q_norm = _normalize_question(question)
+
+
+    results: List[Dict] = []
+
+    # 1) "Elenca i film del <ANNO>."
+    if q_norm.startswith("elenca i film del"):
+        year = _extract_year_from_question(question)
+
+        sql = """
+            SELECT m.title, m.year
+            FROM movies AS m
+            WHERE m.year = ?
+            ORDER BY m.title;
+        """
+        rows = execute_select(sql, (year,))
+
+        for title, year_value in rows:
+            # Il test si aspetta item_type = "film" e name = titolo
+            results.append(_make_item("film", title))
+
+        return results
+
+    # 2) "Quali sono i registi presenti su Netflix?"
+    if q_norm == "quali sono i registi presenti su netflix?":
+        sql = """
+            SELECT DISTINCT d.name
+            FROM directors d
+            JOIN movies m           ON d.id = m.director_id
+            JOIN movie_platforms mp ON m.id = mp.movie_id
+            JOIN platforms p        ON p.id = mp.platform_id
+            WHERE LOWER(TRIM(p.name)) = 'netflix'
+            ORDER BY d.name;
+        """
+        rows = execute_select(sql)
+
+        for (director_name,) in rows:
+            results.append(_make_item("director", director_name))
+
+        return results
+
+    # 3) "Elenca tutti i film di fantascienza."
+    if q_norm == "elenca tutti i film di fantascienza":
+        sql = """
+            SELECT m.title, m.year, m.genre
+            FROM movies AS m
+            WHERE LOWER(TRIM(m.genre)) = 'fantascienza'
+            ORDER BY m.year, m.title;
+        """
+        rows = execute_select(sql)
+
+        for title, year_value, genre in rows:
+            results.append(_make_item("film", title))
+
+        return results
+
+    # 4) "Quali film sono stati fatti da un regista di almeno <ANNI> anni?"
+    if q_norm.startswith("quali film sono stati fatti da un regista di almeno"):
+        min_age = _extract_min_age_from_question(question)
+
+        sql = """
+            SELECT 
+                m.title,
+                m.year,
+                d.name AS director_name,
+                d.age  AS director_age
+            FROM movies AS m
+            JOIN directors AS d ON m.director_id = d.id
+            WHERE d.age >= ?
+            ORDER BY m.year, m.title;
+        """
+        rows = execute_select(sql, (min_age,))
+
+        for title, year_value, director_name, director_age in rows:
+            results.append(_make_item("film", title))
+
+        return results
+
+    # 5) "Quali registi hanno fatto più di un film?"
+    if q_norm == "quali registi hanno fatto più di un film?":
+        sql = """
+            SELECT 
+                d.name,
+                COUNT(m.id) AS movies_count
+            FROM directors d
+            JOIN movies m ON d.id = m.director_id
+            GROUP BY d.id, d.name
+            HAVING COUNT(m.id) > 1
+            ORDER BY d.name;
+        """
+        rows = execute_select(sql)
+
+        for director_name, movies_count in rows:
+            results.append(_make_item("director", director_name))
+
+        return results
+
+    # Se la domanda non è riconosciuta -> lista vuota
+    raise ValueError("Domanda non supportata")
+
