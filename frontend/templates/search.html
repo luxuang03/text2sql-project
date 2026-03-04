@@ -22,15 +22,14 @@
 {% if results and results|length > 0 %}
 <table border="1">
     <tr>
-        {% for p in results[0].properties %}
-        <th>{{ p.property_name }}</th>
+        {% for key in results[0].keys() %}
+        <th>{{ key }}</th>
         {% endfor %}
     </tr>
-
-    {% for item in results %}
+    {% for row in results %}
     <tr>
-        {% for p in item.properties %}
-        <td>{{ p.property_value }}</td>
+        {% for value in row.values() %}
+        <td>{{ value }}</td>
         {% endfor %}
     </tr>
     {% endfor %}
