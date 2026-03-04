@@ -2,7 +2,6 @@ from fastapi import FastAPI, HTTPException, Body
 from contextlib import asynccontextmanager
 from pathlib import Path
 import time
-
 from .db import get_connection
 from .logic.add_logic import handle_add, AddLineFormatError, handle_add_from_tsv
 from .logic.schema_logic import get_schema
@@ -82,10 +81,8 @@ def populate_db_on_startup():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # STARTUP
     populate_db_on_startup()
     yield
-    # SHUTDOWN (niente)
 
 
 app = FastAPI(

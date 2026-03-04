@@ -1,18 +1,16 @@
 import mariadb
 
-# Parametri del DB -- da sostituire quando avrete il container MariaDB sul Mac
-DB_HOST = "mariadb"   # deve essere il nome del servizio MariaDB nel docker-compose
+# Parametri del DB 
+DB_HOST = "mariadb"   
 DB_PORT = 3306
-DB_USER = "user"      # come in docker-compose
+DB_USER = "user"      
 DB_PASSWORD = "password"
 DB_NAME = "movies_db"
 
 
 
+# Crea connessione con mariadb
 def get_connection() -> mariadb.Connection:
-    """
-    Crea una connessione a MariaDB e la restituisce.
-    """
     try:
         conn = mariadb.connect(
             host=DB_HOST,
@@ -28,10 +26,8 @@ def get_connection() -> mariadb.Connection:
         raise
 
 
+# Esegue select
 def execute_select(query: str, params: tuple | None = None) -> list[tuple]:
-    """
-    Esegue una SELECT e restituisce una lista di tuple.
-    """
     if params is None:
         params = ()
 
@@ -46,10 +42,8 @@ def execute_select(query: str, params: tuple | None = None) -> list[tuple]:
         conn.close()
 
 
+# Esegue insert/update/delete
 def execute_modify(query: str, params: tuple | None = None) -> None:
-    """
-    Esegue INSERT/UPDATE/DELETE e fa commit.
-    """
     if params is None:
         params = ()
 
