@@ -24,7 +24,7 @@ services:
     volumes:
       - ollama_data:/root/.ollama
     healthcheck:
-      test: ["CMD", "sh", "-c", "wget -qO- http://localhost:11434/api/tags >/dev/null 2>&1 || exit 1"]
+      test: ["CMD-SHELL", "ollama list >/dev/null 2>&1"]
       interval: 10s
       timeout: 5s
       retries: 20
