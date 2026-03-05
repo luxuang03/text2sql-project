@@ -88,10 +88,10 @@ def handle_search(question: str) -> List[Dict]:
         year = _extract_year_from_question(question)
 
         sql = """
-            SELECT m.title, m.year
+            SELECT m.titolo, m.anno
             FROM movies AS m
-            WHERE m.year = ?
-            ORDER BY m.title;
+            WHERE m.anno = ?
+            ORDER BY m.titolo;
         """
         rows = execute_select(sql, (year,))
 
@@ -104,13 +104,13 @@ def handle_search(question: str) -> List[Dict]:
     # 2) "Quali sono i registi presenti su Netflix?"
     if q_norm == "quali sono i registi presenti su netflix?":
         sql = """
-            SELECT DISTINCT d.name
+            SELECT DISTINCT d.nome
             FROM directors d
-            JOIN movies m           ON d.id = m.director_id
+            JOIN movies m           ON d.id = m.regista_id
             JOIN movie_platforms mp ON m.id = mp.movie_id
             JOIN platforms p        ON p.id = mp.platform_id
-            WHERE LOWER(TRIM(p.name)) = 'netflix'
-            ORDER BY d.name;
+            WHERE LOWER(TRIM(p.nome)) = 'netflix'
+            ORDER BY d.nome;
         """
         rows = execute_select(sql)
 
@@ -122,10 +122,10 @@ def handle_search(question: str) -> List[Dict]:
     # 3) "Elenca tutti i film di fantascienza."
     if q_norm == "elenca tutti i film di fantascienza":
         sql = """
-            SELECT m.title, m.year, m.genre
+            SELECT m.titolo, m.anno, m.genere
             FROM movies AS m
-            WHERE LOWER(TRIM(m.genre)) = 'fantascienza'
-            ORDER BY m.year, m.title;
+            WHERE LOWER(TRIM(m.genere)) = 'fantascienza'
+            ORDER BY m.anno, m.titolo;
         """
         rows = execute_select(sql)
 
@@ -140,14 +140,14 @@ def handle_search(question: str) -> List[Dict]:
 
         sql = """
             SELECT 
-                m.title,
-                m.year,
-                d.name AS director_name,
-                d.age  AS director_age
+                m.titolo,
+                m.anno,
+                d.nome AS director_name,
+                d.eta  AS director_age
             FROM movies AS m
-            JOIN directors AS d ON m.director_id = d.id
-            WHERE d.age >= ?
-            ORDER BY m.year, m.title;
+            JOIN directors AS d ON m.regista_id = d.id
+            WHERE d.eta >= ?
+            ORDER BY m.anno, m.titolo;
         """
         rows = execute_select(sql, (min_age,))
 
@@ -160,13 +160,13 @@ def handle_search(question: str) -> List[Dict]:
     if q_norm == "quali registi hanno fatto più di un film?":
         sql = """
             SELECT 
-                d.name,
+                d.nome,
                 COUNT(m.id) AS movies_count
             FROM directors d
-            JOIN movies m ON d.id = m.director_id
-            GROUP BY d.id, d.name
+            JOIN movies m ON d.id = m.regista_id
+            GROUP BY d.id, d.nome
             HAVING COUNT(m.id) > 1
-            ORDER BY d.name;
+            ORDER BY d.nome;
         """
         rows = execute_select(sql)
 

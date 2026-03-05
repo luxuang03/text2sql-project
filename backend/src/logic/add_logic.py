@@ -46,19 +46,19 @@ def _upsert_director(cur, director_name: str, director_age: int) -> int:
     Inserisce o aggiorna un regista basandosi solo sul nome.
     Ritorna director_id.
     """
-    cur.execute("SELECT id FROM directors WHERE name = ?;", (director_name,))
+    cur.execute("SELECT id FROM directors WHERE nome = ?;", (director_name,))
     row = cur.fetchone()
 
     if row is None:
         cur.execute(
-            "INSERT INTO directors (name, age) VALUES (?, ?);",
+            "INSERT INTO directors (nome, eta) VALUES (?, ?);",
             (director_name, director_age),
         )
         return cur.lastrowid
 
     director_id = row[0]
     cur.execute(
-        "UPDATE directors SET age = ? WHERE id = ?;",
+        "UPDATE directors SET eta = ? WHERE id = ?;",
         (director_age, director_id),
     )
     return director_id
@@ -76,11 +76,11 @@ def _upsert_platforms(cur, platforms: List[str]) -> List[int]:
         if not pname:
             continue
 
-        cur.execute("SELECT id FROM platforms WHERE name = ?;", (pname,))
+        cur.execute("SELECT id FROM platforms WHERE nome = ?;", (pname,))
         row = cur.fetchone()
 
         if row is None:
-            cur.execute("INSERT INTO platforms (name) VALUES (?);", (pname,))
+            cur.execute("INSERT INTO platforms (nome) VALUES (?);", (pname,))
             ids.append(cur.lastrowid)
         else:
             ids.append(row[0])
@@ -93,19 +93,19 @@ def _upsert_movie(cur, title: str, year: int, genre: str, director_id: int) -> i
     Inserisce o aggiorna un film basandosi solo sul titolo.
     Ritorna movie_id.
     """
-    cur.execute("SELECT id FROM movies WHERE title = ?;", (title,))
+    cur.execute("SELECT id FROM movies WHERE titolo = ?;", (title,))
     row = cur.fetchone()
 
     if row is None:
         cur.execute(
-            "INSERT INTO movies (title, year, genre, director_id) VALUES (?, ?, ?, ?);",
+            "INSERT INTO movies (titolo, anno, genere, regista_id) VALUES (?, ?, ?, ?);",
             (title, year, genre, director_id),
         )
         return cur.lastrowid
 
     movie_id = row[0]
     cur.execute(
-        "UPDATE movies SET year = ?, genre = ?, director_id = ? WHERE id = ?;",
+        "UPDATE movies SET anno = ?, genere = ?, regista_id = ? WHERE id = ?;",
         (year, genre, director_id, movie_id),
     )
     return movie_id
