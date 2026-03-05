@@ -6,9 +6,7 @@ from .db import get_connection
 from .logic.add_logic import handle_add, AddLineFormatError, handle_add_from_tsv
 from .logic.schema_logic import get_schema
 from .logic.search_logic import handle_search
-import re
-from pydantic import BaseModel
-from typing import Any, Dict, List, Optional, Literal
+from .logic.sql_search_logic import run_sql_search
 
 
 def _is_movies_table_empty() -> bool:
@@ -105,75 +103,7 @@ class SqlSearchResponse(BaseModel):
     results: Optional[List[Dict[str, Any]]]
 
 
-_UNSAFE_PATTERNS = [
-    r"\b(drop|truncate|alter|create|rename)\b",
-    r"\b(insert|update|delete|replace)\b",
-    r"\b(grant|revoke)\b",
-    r"\b(call|execute|prepare)\b",
-    r"\b(load_file|outfile|dumpfile)\b",
-    r"--", r"/\*", r"\*/"
-]
 
-
-def validate_sql(sql_query: str) -> str:
-    if sql_query is None:
-        return "invalid"
-    q = sql_query.strip()
-    if not q:
-        return "invalid"
-
-    # multi-statement: consentiamo al massimo un ';' finale
-    if q.count(";") > 1 or (q.count(";") == 1 and not q.endswith(";")):
-        return "unsafe"
-
-    q = q[:-1].strip() if q.endswith(";") else q
-
-    # deve iniziare con SELECT
-    if not re.match(r"(?is)^\s*select\b", q):
-        return "unsafe"
-
-    # blocco keyword/commenti pericolosi
-    for pat in _UNSAFE_PATTERNS:
-        if re.search(pat, q, flags=re.IGNORECASE):
-            return "unsafe"
-
-    return "valid"
-
-
-def _guess_item_type(sql: str) -> str:
-    s = sql.lower()
-    if " from movies" in s or " join movies" in s:
-        return "film"
-    return "item"
-
-
-def _fetch_rows_as_dicts(cur) -> List[Dict[str, Any]]:
-    rows = cur.fetchall()
-    cols = [d[0] for d in cur.description] if cur.description else []
-    return [{cols[i]: r[i] for i in range(len(cols))} for r in rows]
-
-
-def _row_to_item(row: Dict[str, Any], item_type: str) -> Dict[str, Any]:
-    # Il tester estrae la property_name == "name" :contentReference[oaicite:7]{index=7}
-    keys = list(row.keys())
-    name_key = None
-    for cand in ["titolo", "title", "nome", "name"]:
-        if cand in row:
-            name_key = cand
-            break
-    if name_key is None and keys:
-        name_key = keys[0]
-
-    properties: List[Dict[str, Any]] = []
-    if name_key is not None:
-        properties.append({"property_name": "name", "property_value": row.get(name_key)})
-
-    for k, v in row.items():
-        if k == name_key:
-            continue
-        properties.append({"property_name": k, "property_value": v})
-
-    return {"item_type": item_type, "properties": properties}
 
 @app.get("/")
 def root():
@@ -187,28 +117,7 @@ def schema_summary():
 
 @app.post("/sql_search", response_model=SqlSearchResponse)
 def sql_search(payload: SqlSearchRequest):
-    sql = payload.sql_query
-
-    status = validate_sql(sql)
-    if status != "valid":
-        return {"sql": sql, "sql_validation": status, "results": None}
-
-    try:
-        conn = get_connection()  # già esiste in db.py :contentReference[oaicite:8]{index=8}
-        try:
-            cur = conn.cursor()
-            cur.execute(sql)
-            rows = _fetch_rows_as_dicts(cur)
-            cur.close()
-        finally:
-            conn.close()
-    except Exception:
-        # Caso SELECT su tabella inesistente (WeirdPasta) -> invalid :contentReference[oaicite:9]{index=9}
-        return {"sql": sql, "sql_validation": "invalid", "results": None}
-
-    item_type = _guess_item_type(sql)
-    results = [_row_to_item(r, item_type) for r in rows]
-    return {"sql": sql, "sql_validation": "valid", "results": results}
+    return run_sql_search(payload.sql_query)
 
 @app.get("/search/{question}")
 def search_path(question: str):
