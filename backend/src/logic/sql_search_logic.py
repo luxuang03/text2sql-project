@@ -99,6 +99,5 @@ def run_sql_search(sql_query: str) -> Dict[str, Any]:
         # SELECT che non esegue (es. tabella inesistente) => invalid, results None :contentReference[oaicite:3]{index=3}
         return {"sql": sql_query, "sql_validation": "invalid", "results": None}
 
-    item_type = _guess_item_type(sql_query)
-    results = [_row_to_item(r, item_type) for r in rows]
+    results = [_row_to_item(r, "film") for r in rows]
     return {"sql": sql_query, "sql_validation": "valid", "results": results}
