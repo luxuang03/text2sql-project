@@ -7,8 +7,11 @@ from .logic.add_logic import handle_add, AddLineFormatError, handle_add_from_tsv
 from .logic.schema_logic import get_schema
 from .logic.search_logic import handle_search
 from .logic.sql_search_logic import run_sql_search
-from pydantic import BaseModel
-from typing import Any, Dict, List, Optional, Literal
+from .models.pydantic_models import (
+    SqlSearchRequest, SqlSearchResponse,
+    AddRequest, AddResponse,
+    ResultItem, SchemaRow
+)
 
 
 def _is_movies_table_empty() -> bool:
@@ -95,16 +98,6 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-class SqlSearchRequest(BaseModel):
-    sql_query: str
-
-
-class SqlSearchResponse(BaseModel):
-    sql: str
-    sql_validation: Literal["valid", "unsafe", "invalid"]
-    results: Optional[List[Dict[str, Any]]]
-
-
 
 
 @app.get("/")
@@ -112,16 +105,12 @@ def root():
     return {"status": "ok", "message": "Backend FastAPI attivo"}
 
 
-@app.get("/schema_summary")
+@app.get("/schema_summary", response_model=list[SchemaRow])
 def schema_summary():
     return get_schema()
 
 
-@app.post("/sql_search", response_model=SqlSearchResponse)
-def sql_search(payload: SqlSearchRequest):
-    return run_sql_search(payload.sql_query)
-
-@app.get("/search/{question}")
+@app.get("/search/{question}", response_model=list[ResultItem])
 def search_path(question: str):
     try:
         return handle_search(question)
@@ -129,18 +118,15 @@ def search_path(question: str):
         raise HTTPException(status_code=422, detail=str(e))
 
 
-
 @app.post("/add")
-def add(payload: dict = Body(...)):
-    """
-    Input JSON: {"data_line": "..."} con virgole come delimitatore.
-    Output: {"status":"ok"} oppure 422 se formato non valido.
-    """
-    data_line = payload.get("data_line")
-    if data_line is None:
-        raise HTTPException(status_code=422, detail="Campo 'data_line' mancante nel JSON.")
-
+def add(payload: AddRequest):   # oppure payload: dict = Body(...)
     try:
-        return handle_add(data_line)
+        handle_add(payload.data_line)  # se dict: payload["data_line"] / payload.get(...)
+        return {"status": "ok"}
     except AddLineFormatError as e:
         raise HTTPException(status_code=422, detail=str(e))
+
+
+@app.post("/sql_search", response_model=SqlSearchResponse)
+def sql_search(payload: SqlSearchRequest):
+    return run_sql_search(payload.sql_query)
