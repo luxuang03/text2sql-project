@@ -12,6 +12,9 @@ class ResultItem(BaseModel):
 class SqlSearchRequest(BaseModel):
     sql_query: str
 
+class SearchRequest(BaseModel):
+    question: str
+
 class SqlSearchResponse(BaseModel):
     sql: str
     sql_validation: Literal["valid", "unsafe", "invalid"]

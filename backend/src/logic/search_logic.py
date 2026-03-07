@@ -1,6 +1,10 @@
 import re
 from typing import List, Dict
-
+from ..db import get_connection
+from .schema_prompt import get_schema_for_llm
+from .sql_search_logic import run_sql_search
+import requests
+import os
 from ..db import execute_select
 
 
@@ -178,3 +182,63 @@ def handle_search(question: str) -> List[Dict]:
     # Se la domanda non è riconosciuta -> lista vuota
     raise ValueError("Domanda non supportata")
 
+
+
+
+
+def ask_ollama(prompt: str, model: str | None = None) -> str:
+    ollama_url = os.getenv("OLLAMA_URL", "http://ollama:11434/api/generate")
+    model_name = model or os.getenv("OLLAMA_MODEL", "gemma3:1b-it-qat")
+
+    response = requests.post(
+        ollama_url,
+        json={
+            "model": model_name,
+            "prompt": prompt,
+            "stream": False
+        },
+        timeout=180
+    )
+    response.raise_for_status()
+    data = response.json()
+
+    return data.get("response", "").strip()
+
+
+def search_with_llm(question: str, model: str | None = None):
+    conn = get_connection()
+    try:
+        schema_str = get_schema_for_llm(conn)
+
+        prompt = f"""
+Sei un assistente che genera query SQL per MariaDB.
+
+Schema del database:
+{schema_str}
+
+Domanda utente:
+{question}
+
+Regole:
+- genera una sola query SQL
+- usa solo SELECT
+- usa solo tabelle e colonne presenti nello schema
+- non scrivere spiegazioni
+- non usare markdown
+- non usare ```sql
+
+Rispondi solo con la query SQL.
+""".strip()
+
+        sql_query = ask_ollama(prompt, model=model)
+
+        sql_result = run_sql_search(sql_query)
+
+        return {
+            "sql": sql_query,
+            "sql_validation": sql_result["sql_validation"],
+            "results": sql_result["results"]
+        }
+
+    finally:
+        conn.close()

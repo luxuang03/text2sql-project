@@ -5,12 +5,12 @@ import time
 from .db import get_connection
 from .logic.add_logic import handle_add, AddLineFormatError, handle_add_from_tsv
 from .logic.schema_logic import get_schema
-from .logic.search_logic import handle_search
+from .logic.search_logic import handle_search, search_with_llm
 from .logic.sql_search_logic import run_sql_search
 from .models.pydantic_models import (
     SqlSearchRequest, SqlSearchResponse,
     AddRequest, AddResponse,
-    ResultItem, SchemaRow
+    ResultItem, SchemaRow, SearchRequest
 )
 
 
@@ -109,6 +109,10 @@ def root():
 def schema_summary():
     return get_schema()
 
+
+@app.post("/search", response_model=SqlSearchResponse)
+def search_endpoint(request: SearchRequest):
+    return search_with_llm(request.question)
 
 @app.get("/search/{question}", response_model=list[ResultItem])
 def search_path(question: str):
