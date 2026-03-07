@@ -184,6 +184,7 @@ def handle_search(question: str) -> List[Dict]:
 
 
 
+# Logica della POST /Search
 
 
 def ask_ollama(prompt: str, model: str | None = None) -> str:
@@ -245,10 +246,12 @@ Rispondi solo con la query SQL.
 
 
 # FUNZIONE DUMMY PER TESTING SCHELETRO OUTPUT POST /SEARCH
-#         
+        
 # def search_with_llm(question: str):
+#     sql_query = "SELECT titolo FROM movies WHERE anno = 2010;"
+#     sql_result = run_sql_search(sql_query)
 #     return {
-#         "sql": "",
-#         "sql_validation": "invalid",
-#         "results": None
+#         "sql": sql_query,
+#         "sql_validation": sql_result["sql_validation"],
+#         "results": sql_result["results"]
 #     }

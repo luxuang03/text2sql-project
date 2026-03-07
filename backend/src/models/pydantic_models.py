@@ -14,7 +14,7 @@ class SqlSearchRequest(BaseModel):
 
 class SearchRequest(BaseModel):
     question: str
-
+    model: Optional[str] = None
 class SqlSearchResponse(BaseModel):
     sql: str
     sql_validation: Literal["valid", "unsafe", "invalid"]
