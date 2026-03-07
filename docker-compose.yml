@@ -16,11 +16,32 @@ services:
       timeout: 3s
       retries: 10
 
+  ollama:
+    image: ollama/ollama:latest
+    container_name: text2sql_ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    entrypoint: ["/bin/sh", "-c"]
+    command: >
+      "ollama serve &
+       sleep 5 &&
+       ollama pull gemma3:1b-it-qat &&
+       wait"
+
   backend:
     build: ./backend
     container_name: text2sql_backend
     depends_on:
       mariadb:
+        condition: service_healthy
+      ollama:
         condition: service_healthy
     ports:
       - "8003:8000"
@@ -30,6 +51,7 @@ services:
       DB_USER: user
       DB_PASSWORD: password
       DB_NAME: movies_db
+      OLLAMA_URL: http://ollama:11434
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/docs')"]
       interval: 30s
@@ -49,3 +71,4 @@ services:
 
 volumes:
   mariadb_data:
+  ollama_data:
