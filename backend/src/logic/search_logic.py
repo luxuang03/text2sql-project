@@ -205,9 +205,13 @@ Regole:
 - usa solo tabelle e colonne presenti nello schema
 - non scrivere spiegazioni
 - non usare markdown
-- non usare ```sql
+- non usare blocchi ```sql
+- non aggiungere testo prima o dopo la query
 
-Rispondi solo con la query SQL.
+Formato di output obbligatorio:
+SELECT ... ;
+
+Rispondi solo con la query SQL pura.
 """.strip()
 
         sql_query = ask_ollama_for_sql(prompt, model=model)
