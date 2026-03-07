@@ -242,3 +242,13 @@ Rispondi solo con la query SQL.
 
     finally:
         conn.close()
+
+
+# FUNZIONE DUMMY PER TESTING SCHELETRO OUTPUT POST /SEARCH
+#         
+# def search_with_llm(question: str):
+#     return {
+#         "sql": "",
+#         "sql_validation": "invalid",
+#         "results": None
+#     }

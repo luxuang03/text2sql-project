@@ -1,7 +1,9 @@
+# import os ---> Per dummy endpoint
 from fastapi import FastAPI, HTTPException, Body
 from contextlib import asynccontextmanager
 from pathlib import Path
 import time
+# from .logic.schema_prompt import get_schema_for_llm ---> Per dummy endpoint
 from .db import get_connection
 from .logic.add_logic import handle_add, AddLineFormatError, handle_add_from_tsv
 from .logic.schema_logic import get_schema
@@ -122,7 +124,7 @@ def search_path(question: str):
         raise HTTPException(status_code=422, detail=str(e))
 
 
-@app.post("/add")
+@app.post("/add", response_model=AddResponse)
 def add(payload: AddRequest):   # oppure payload: dict = Body(...)
     try:
         handle_add(payload.data_line)  # se dict: payload["data_line"] / payload.get(...)
@@ -134,3 +136,18 @@ def add(payload: AddRequest):   # oppure payload: dict = Body(...)
 @app.post("/sql_search", response_model=SqlSearchResponse)
 def sql_search(payload: SqlSearchRequest):
     return run_sql_search(payload.sql_query)
+
+# ENDPOINT DUMMY PER TESTING DELLO SCHEMA INFORMATIVO DA DARE A OLLAMA
+# 
+# @app.get("/debug/schema")
+# def debug_schema():
+#     conn = get_connection()
+#     try:
+#         db_name = os.getenv("DB_NAME")
+#         schema = get_schema_for_llm(conn)
+#         return {
+#             "db_name": db_name,
+#             "schema": schema
+#         }
+#     finally:
+#         conn.close()

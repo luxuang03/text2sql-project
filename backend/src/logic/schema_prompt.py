@@ -2,7 +2,7 @@ import os
 
 
 def get_schema_for_llm(conn):
-    db_name = os.getenv("MARIADB_DATABASE")
+    db_name = os.getenv("DB_NAME")
 
     cur = conn.cursor()
     cur.execute(
