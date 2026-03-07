@@ -51,7 +51,7 @@ services:
       DB_USER: user
       DB_PASSWORD: password
       DB_NAME: movies_db
-      OLLAMA_URL: http://ollama:11434
+      OLLAMA_URL: http://ollama:11434/api/chat
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/docs')"]
       interval: 30s
