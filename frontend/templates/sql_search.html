@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SQL Search</title>
+</head>
+<body>
+    <h1>SQL Search</h1>
+
+    <form action="/sql_search" method="post">
+        <label for="sql_query">Inserisci una query SQL:</label><br><br>
+        <textarea id="sql_query" name="sql_query" rows="8" cols="80" required>{{ sql_query if sql_query else "" }}</textarea><br><br>
+        <button type="submit">Esegui</button>
+    </form>
+
+    {% if sql_validation %}
+        <h2>Validazione</h2>
+        <p>{{ sql_validation }}</p>
+    {% endif %}
+
+    {% if results %}
+        <h2>Risultati</h2>
+        <pre>{{ results }}</pre>
+    {% endif %}
+
+    {% if error %}
+        <h2>Errore</h2>
+        <p>{{ error }}</p>
+    {% endif %}
+
+    <br>
+    <a href="/">Torna alla home</a>
+</body>
+</html>
