@@ -2,24 +2,70 @@
 <html>
 <head>
     <title>SQL Search Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        h2 {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        a {
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+    </style>
 </head>
 <body>
-    {% if results and results|length > 0 %}
+    <div class="container">
+        <a href="/">Torna alla Home</a>
 
-    <h2>Risultati</h2>
+        {% if results and results|length > 0 %}
+        <h2>Risultati della ricerca</h2>
 
-    <table>
-    <tbody>
-    {% for item in results %}
-    <tr>
-        {% for prop in item.properties %}
-            <td>{{ prop.property_value }}</td>
+        <table>
+        <tbody>
+        {% for item in results %}
+        <tr>
+            {% for prop in item.properties %}
+                <td>{{ prop.property_value }}</td>
+            {% endfor %}
+        </tr>
         {% endfor %}
-    </tr>
-    {% endfor %}
-    </tbody>
-    </table>
+        </tbody>
+        </table>
 
-    {% else %}
-    <p>Nessun risultato trovato.</p>
-    {% endif %}
+        {% else %}
+        <p>Nessun risultato trovato.</p>
+        {% endif %}
+    </div>
+</body>
+</html>
