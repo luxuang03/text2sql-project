@@ -1,30 +1,65 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>SQL Search</title>
+    <title>SQL Search Results</title>
 </head>
 <body>
-    <h1>SQL Search</h1>
+    <h1>Risultato SQL Search</h1>
 
-    <form action="/sql_search" method="post">
-        <label for="sql_query">Inserisci una query SQL:</label><br><br>
-        <textarea id="sql_query" name="sql_query" rows="8" cols="80" required>{{ sql_query if sql_query else "" }}</textarea><br><br>
-        <button type="submit">Esegui</button>
-    </form>
+    <h3>Query inviata</h3>
+    <pre>{{ sql_query }}</pre>
 
     {% if sql_validation %}
-        <h2>Validazione</h2>
+        <h3>Validazione</h3>
         <p>{{ sql_validation }}</p>
     {% endif %}
 
-    {% if results %}
-        <h2>Risultati</h2>
-        <pre>{{ results }}</pre>
+    {% if error %}
+        <h3>Errore</h3>
+        <p>{{ error }}</p>
     {% endif %}
 
-    {% if error %}
-        <h2>Errore</h2>
-        <p>{{ error }}</p>
+    {% if results %}
+        <h3>Risultati</h3>
+
+        <table border="1" cellpadding="6" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>Item type</th>
+                    <th>Proprietà</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in results %}
+                <tr>
+                    <td>{{ item.item_type }}</td>
+                    <td>
+                        <table border="1" cellpadding="4" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Nome proprietà</th>
+                                    <th>Valore</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for prop in item.properties %}
+                                <tr>
+                                    <td>{{ prop.property_name }}</td>
+                                    <td>{{ prop.property_value }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        {% if sql_validation %}
+            <h3>Risultati</h3>
+            <p>Nessun risultato disponibile.</p>
+        {% endif %}
     {% endif %}
 
     <br>
