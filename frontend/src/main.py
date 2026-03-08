@@ -37,6 +37,45 @@ def schema(request: Request):
             {"request": request, "schema": [], "error": str(e)}
         )
 
+@app.get("/sql_search", response_class=HTMLResponse)
+def sql_search_page(request: Request):
+    return templates.TemplateResponse(
+        "sql_search.html",
+        {"request": request}
+    )
+
+@app.post("/sql_search", response_class=HTMLResponse)
+def sql_search(request: Request, sql_query: str = Form(...)):
+    try:
+        r = requests.post(
+            f"{BACKEND_URL}/sql_search",
+            json={"sql_query": sql_query},
+            timeout=10
+        )
+        r.raise_for_status()
+        data = r.json()
+
+        return templates.TemplateResponse(
+            "sql_search.html",
+            {
+                "request": request,
+                "sql_query": sql_query,
+                "sql_validation": data.get("sql_validation"),
+                "results": data.get("results"),
+                "error": None
+            }
+        )
+    except Exception as e:
+        return templates.TemplateResponse(
+            "sql_search.html",
+            {
+                "request": request,
+                "sql_query": sql_query,
+                "sql_validation": None,
+                "results": None,
+                "error": str(e)
+            }
+        )
 
 @app.post("/search", response_class=HTMLResponse)
 def search(request: Request, question: str = Form(...)):
