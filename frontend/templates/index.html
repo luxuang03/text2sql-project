@@ -18,6 +18,13 @@
     <button type="submit">Cerca</button>
 </form>
 
+<h2>SQL Search</h2>
+<form action="/sql_search" method="post">
+  <label for="sql_query">Inserisci query SQL:</label><br>
+  <textarea id="sql_query" name="sql_query" rows="6" cols="80" required></textarea><br><br>
+  <button type="submit">Esegui SQL</button>
+</form>
+
 <h2>Add</h2>
 <form action="/add" method="post">
     <textarea name="data_line" rows="4" cols="80" required></textarea>
