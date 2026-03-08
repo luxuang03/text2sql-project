@@ -36,13 +36,7 @@ def schema(request: Request):
             "schema.html",
             {"request": request, "schema": [], "error": str(e)}
         )
-
-@app.get("/sql_search", response_class=HTMLResponse)
-def sql_search_page(request: Request):
-    return templates.TemplateResponse(
-        "sql_search.html",
-        {"request": request}
-    )
+        
 
 @app.post("/sql_search", response_class=HTMLResponse)
 def sql_search(request: Request, sql_query: str = Form(...)):
@@ -76,6 +70,7 @@ def sql_search(request: Request, sql_query: str = Form(...)):
                 "error": str(e)
             }
         )
+
 
 @app.post("/search", response_class=HTMLResponse)
 def search(request: Request, question: str = Form(...)):
