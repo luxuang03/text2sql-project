@@ -4,65 +4,22 @@
     <title>SQL Search Results</title>
 </head>
 <body>
-    <h1>Risultato SQL Search</h1>
+    {% if results and results|length > 0 %}
 
-    <h3>Query inviata</h3>
-    <pre>{{ sql_query }}</pre>
+    <h2>Risultati</h2>
 
-    {% if sql_validation %}
-        <h3>Validazione</h3>
-        <p>{{ sql_validation }}</p>
-    {% endif %}
+    <table>
+    <tbody>
+    {% for item in results %}
+    <tr>
+        {% for prop in item.properties %}
+            <td>{{ prop.property_value }}</td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+    </tbody>
+    </table>
 
-    {% if error %}
-        <h3>Errore</h3>
-        <p>{{ error }}</p>
-    {% endif %}
-
-    {% if results %}
-        <h3>Risultati</h3>
-
-        <table border="1" cellpadding="6" cellspacing="0">
-            <thead>
-                <tr>
-                    <th>Item type</th>
-                    <th>Proprietà</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in results %}
-                <tr>
-                    <td>{{ item.item_type }}</td>
-                    <td>
-                        <table border="1" cellpadding="4" cellspacing="0">
-                            <thead>
-                                <tr>
-                                    <th>Nome proprietà</th>
-                                    <th>Valore</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for prop in item.properties %}
-                                <tr>
-                                    <td>{{ prop.property_name }}</td>
-                                    <td>{{ prop.property_value }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
     {% else %}
-        {% if sql_validation %}
-            <h3>Risultati</h3>
-            <p>Nessun risultato disponibile.</p>
-        {% endif %}
+    <p>Nessun risultato trovato.</p>
     {% endif %}
-
-    <br>
-    <a href="/">Torna alla home</a>
-</body>
-</html>
