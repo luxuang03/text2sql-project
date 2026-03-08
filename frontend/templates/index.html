@@ -2,35 +2,118 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Frontend Esonero</title>
+    <title>Frontend</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            font-size: 13px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        a {
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+        }
+
+        button {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            background-color: #34a853;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #2d9449;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        form {
+            margin-bottom: 10px;
+        }
+        .schema-button {
+            display: inline-block;
+            padding: 10px 16px;
+            background-color: #4f46e5;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        .schema-button:hover {
+            background-color: #4338ca;
+        }
+    </style>
 </head>
 <body>
-<h1>Frontend – Progetto Esonero</h1>
+    <div class="container">
+        <h1>Frontend Progetto</h1>
 
-<ul>
-    <li><a href="/schema">Visualizza schema</a></li>
-</ul>
+        <a class="schema-button" href="/schema">Visualizza schema</a>
 
-<h2>Search</h2>
-<form action="/search" method="post">
-    <input type="text" name="question" size="80" required>
-    <br><br>
-    <button type="submit">Cerca</button>
-</form>
+        <hr style="margin:20px 0;">
+        
+        <h2>Search</h2>
+        <form action="/search" method="post">
+            <input type="text" name="question" placeholder="Inserisci una domanda..." required>
+            <br><br>
+            <button type="submit">Cerca</button>
+        </form>
 
-<h2>SQL Search</h2>
-<form action="/sql_search" method="post">
-    <label for="sql_query">Inserisci una query SQL:</label><br><br>
-    <textarea id="sql_query" name="sql_query" rows="6" cols="80" required></textarea><br><br>
-    <button type="submit">Esegui SQL Search</button>
-</form>
+        <hr style="margin:20px 0;">
+        
+        <h2>SQL Search</h2>
+        <form action="/sql_search" method="post">
+            <textarea id="sql_query" name="sql_query" rows="6" placeholder="Inserisci una query SQL..." required></textarea><br><br>
+            <button type="submit">Esegui SQL Search</button>
+        </form>
 
-<h2>Add</h2>
-<form action="/add" method="post">
-    <textarea name="data_line" rows="4" cols="80" required></textarea>
-    <br><br>
-    <button type="submit">Aggiungi</button>
-</form>
-
+        <hr style="margin:20px 0;">
+        
+        <h2>Add</h2>
+        <form action="/add" method="post">
+            <textarea name="data_line" rows="4" placeholder="Inserisci una riga di dati separata da virgole..." required></textarea>
+            <br><br>
+            <button type="submit">Aggiungi</button>
+        </form>
+    </div>
 </body>
 </html>
