@@ -2,7 +2,7 @@ import os
 
 
 def get_schema_for_llm(conn):
-    db_name = os.getenv("DB_NAME")
+    db_name = os.getenv("DB_NAME", "movies_db")
 
     cur = conn.cursor()
     cur.execute(

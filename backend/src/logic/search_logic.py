@@ -14,11 +14,11 @@ def _normalize_question(q: str) -> str:
     - trim
     - collassa spazi multipli
     - lower
-    - rimuove "." e "!"
+    - rimuove ".", "?" e "!"
     """
     q = " ".join(q.strip().split())
     q = q.lower()
-    q = q.rstrip(".!")
+    q = q.rstrip(".?!")
     return q
 
 
@@ -119,7 +119,7 @@ def handle_search(question: str) -> List[Dict]:
         return results
 
     # 2) "Quali sono i registi presenti su Netflix?"
-    if q_norm == "quali sono i registi presenti su netflix?":
+    if q_norm == "quali sono i registi presenti su netflix":
         sql = """
             SELECT DISTINCT d.nome
             FROM directors d
@@ -174,7 +174,7 @@ def handle_search(question: str) -> List[Dict]:
         return results
 
     # 5) "Quali registi hanno fatto più di un film?"
-    if q_norm == "quali registi hanno fatto più di un film?":
+    if q_norm == "quali registi hanno fatto più di un film":
         sql = """
             SELECT 
                 d.nome,
