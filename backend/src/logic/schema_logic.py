@@ -1,3 +1,4 @@
+import os
 from ..db import execute_select
 
 
@@ -8,6 +9,8 @@ def get_schema() -> list[dict]:
     - table_name
     - table_column   <-- NOME RICHIESTO DAL TEST
     """
+    db_name = os.getenv("DB_NAME", "movies_db")
+    
     query = """
         SELECT TABLE_NAME, COLUMN_NAME
         FROM INFORMATION_SCHEMA.COLUMNS
@@ -15,7 +18,7 @@ def get_schema() -> list[dict]:
         ORDER BY TABLE_NAME, ORDINAL_POSITION;
     """
 
-    rows = execute_select(query, ("movies_db",))
+    rows = execute_select(query, (db_name,))
 
     result: list[dict] = []
     for table_name, column_name in rows:
