@@ -244,6 +244,12 @@ JOIN movie_platforms mp ON m.id = mp.movie_id
 JOIN platforms p ON p.id = mp.platform_id
 WHERE LOWER(TRIM(p.nome)) = 'netflix';
 
+Domanda: Quali film sono stati fatti da un regista di almeno 50 anni?
+SQL: SELECT m.titolo
+FROM movies m
+JOIN directors d ON d.id = m.regista_id
+WHERE d.eta >= 50;
+
 Domanda utente:
 {question}
 
