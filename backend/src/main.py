@@ -14,6 +14,7 @@ from .models.pydantic_models import (
     AddRequest, AddResponse,
     ResultItem, SchemaRow, SearchRequest
 )
+from .logic.llm_client import ensure_ollama_model
 
 
 def _is_movies_table_empty() -> bool:
@@ -90,6 +91,7 @@ def populate_db_on_startup():
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     populate_db_on_startup()
+    ensure_ollama_model()
     yield
 
 

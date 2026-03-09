@@ -8,7 +8,7 @@ services:
       MARIADB_USER: user
       MARIADB_PASSWORD: password
     volumes:
-      - mariadb_data:/var/lib/mysql
+      - ./mariadb_data:/var/lib/mysql
       - ./mariadb_init:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
@@ -22,18 +22,12 @@ services:
     ports:
       - "11434:11434"
     volumes:
-      - ollama_data:/root/.ollama
+      - ./ollama_data:/root/.ollama
     healthcheck:
       test: ["CMD", "ollama", "list"]
       interval: 10s
       timeout: 5s
       retries: 10
-    entrypoint: ["/bin/sh", "-c"]
-    command: >
-      "ollama serve &
-       sleep 5 &&
-       ollama pull gemma3:1b-it-qat &&
-       wait"
 
   backend:
     build: ./backend
@@ -51,12 +45,13 @@ services:
       DB_USER: user
       DB_PASSWORD: password
       DB_NAME: movies_db
-      OLLAMA_URL: http://ollama:11434/api/chat
+      OLLAMA_BASE_URL: http://ollama:11434
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/docs')"]
-      interval: 30s
-      timeout: 3s
-      retries: 20
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/', timeout=5)"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
 
   frontend:
     build: ./frontend
@@ -71,6 +66,3 @@ services:
     volumes:
       - ./frontend:/app
 
-volumes:
-  mariadb_data:
-  ollama_data:
