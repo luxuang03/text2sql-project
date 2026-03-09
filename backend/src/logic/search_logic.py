@@ -192,7 +192,7 @@ def handle_search(question: str) -> List[Dict]:
 
         return results
 
-    # Se la domanda non è riconosciuta -> lista vuota
+    # Se la domanda non è riconosciuta -> Messaggio di errore
     raise ValueError("Domanda non supportata")
 
 
