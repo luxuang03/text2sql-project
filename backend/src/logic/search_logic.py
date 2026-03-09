@@ -231,6 +231,9 @@ Regole obbligatorie:
 - Non usare il campo genere per rispondere a domande sulle piattaforme.
 - Se la domanda contiene espressioni come "di almeno 50 anni", interpreta il numero come un filtro numerico sulla colonna età del regista, non come una stringa o un nome proprio.
 - Non trasformare descrizioni testuali come "regista di almeno 50 anni" in valori da cercare nella colonna nome.
+- I generi dei film (fantascienza, azione, commedia, horror, drammatico, ecc.) sono valori della colonna "genere" nella tabella movies.
+- Non creare colonne basate sui generi.
+- Usa sempre la colonna movies.genere per filtrare i generi.
 
 Esempi:
 
