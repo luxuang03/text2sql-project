@@ -93,13 +93,22 @@
         
         <h2>Search</h2>
         <form action="/search" method="post">
-            <input type="text" name="question" placeholder="Inserisci una domanda..." required>
+            <input type="text" name="question" placeholder="Inserisci una domanda supportata..." required>
             <br><br>
             <button type="submit">Cerca</button>
         </form>
 
         <hr style="margin:20px 0;">
-        
+
+        <h2>Search con LLM</h2>
+        <form action="/search_with_llm" method="post">
+            <input type="text" name="question" placeholder="Fai una domanda in linguaggio naturale..." required>
+            <br><br>
+            <button type="submit">Cerca con LLM</button>
+        </form>
+
+        <hr style="margin:20px 0;">
+
         <h2>SQL Search</h2>
         <form action="/sql_search" method="post">
             <textarea id="sql_query" name="sql_query" rows="6" placeholder="Inserisci una query SQL..." required></textarea><br><br>
