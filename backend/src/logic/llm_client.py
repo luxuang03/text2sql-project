@@ -13,11 +13,20 @@ def ask_ollama_for_sql(prompt: str, model: str | None = None) -> str:
             "model": model_name,
             "messages": [
                 {
+                    "role": "system",
+                    "content": "Sei un assistente che traduce domande in SQL per MariaDB. Devi rispondere solo con una query SELECT valida."
+                },
+                {
                     "role": "user",
                     "content": prompt
                 }
             ],
-            "stream": False
+            "stream": False,
+            "options": {
+                "temperature": 0,
+                "top_p": 1,
+                "seed": 42
+            }
         },
         timeout=180
     )
