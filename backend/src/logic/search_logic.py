@@ -14,11 +14,11 @@ def _normalize_question(q: str) -> str:
     - trim
     - collassa spazi multipli
     - lower
-    - rimuove ".", "?" e "!"
+    - rimuove "." e "!"
     """
     q = " ".join(q.strip().split())
     q = q.lower()
-    q = q.rstrip(".?!")
+    q = q.rstrip(".!")
     return q
 
 
