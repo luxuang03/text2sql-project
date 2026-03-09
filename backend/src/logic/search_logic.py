@@ -193,23 +193,45 @@ def search_with_llm(question: str, model: str | None = None):
         prompt = f"""
 Sei un assistente che genera query SQL per MariaDB.
 
+Devi tradurre una domanda in linguaggio naturale in UNA SOLA query SQL.
+
 Schema del database:
 {schema_str}
 
-Domanda utente:
-{question}
-
-Regole:
+Regole obbligatorie:
 - genera una sola query SQL
 - usa solo SELECT
+- non usare INSERT, UPDATE, DELETE, DROP, ALTER, CREATE
 - usa solo tabelle e colonne presenti nello schema
+- non inventare colonne
+- non inventare id numerici
+- non usare SELECT *
+- usa JOIN esplicite quando servono
+- se la domanda contiene un nome di piattaforma come Netflix, cerca quel nome nella tabella delle piattaforme
+- restituisci solo SQL puro
 - non scrivere spiegazioni
 - non usare markdown
 - non usare blocchi ```sql
 - non aggiungere testo prima o dopo la query
 
-Formato di output obbligatorio:
-SELECT ... ;
+Esempi:
+
+Domanda: Elenca i film del 2010.
+SQL: SELECT titolo FROM movies WHERE anno = 2010;
+
+Domanda: Elenca tutti i film di fantascienza.
+SQL: SELECT titolo FROM movies WHERE LOWER(TRIM(genere)) = 'fantascienza';
+
+Domanda: Quali sono i registi presenti su Netflix?
+SQL: SELECT DISTINCT d.nome
+FROM directors d
+JOIN movies m ON d.id = m.regista_id
+JOIN movie_platforms mp ON m.id = mp.movie_id
+JOIN platforms p ON p.id = mp.platform_id
+WHERE LOWER(TRIM(p.nome)) = 'netflix';
+
+Domanda utente:
+{question}
 
 Rispondi solo con la query SQL pura.
 """.strip()
