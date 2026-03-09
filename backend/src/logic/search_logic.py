@@ -227,6 +227,10 @@ Regole obbligatorie:
 - non usare markdown
 - non usare blocchi ```sql
 - non aggiungere testo prima o dopo la query
+- Se la domanda contiene il nome di una piattaforma come Netflix, Disney+ o Amazon Prime, devi usare la tabella delle piattaforme e la tabella ponte tra film e piattaforme.
+- Non usare il campo genere per rispondere a domande sulle piattaforme.
+- Se la domanda contiene espressioni come "di almeno 50 anni", interpreta il numero come un filtro numerico sulla colonna età del regista, non come una stringa o un nome proprio.
+- Non trasformare descrizioni testuali come "regista di almeno 50 anni" in valori da cercare nella colonna nome.
 
 Esempi:
 
@@ -249,6 +253,13 @@ SQL: SELECT m.titolo
 FROM movies m
 JOIN directors d ON d.id = m.regista_id
 WHERE d.eta >= 50;
+
+Domanda: Quali film sono disponibili su Netflix?
+SQL: SELECT DISTINCT m.titolo
+FROM movies m
+JOIN movie_platforms mp ON m.id = mp.movie_id
+JOIN platforms p ON p.id = mp.platform_id
+WHERE LOWER(TRIM(p.nome)) = 'netflix';
 
 Domanda utente:
 {question}
