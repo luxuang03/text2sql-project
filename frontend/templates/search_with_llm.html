@@ -142,6 +142,8 @@
     <form action="/search_with_llm" method="post">
         <input type="text" name="question" size="80" value="{{ question }}" placeholder="Inserisci una domanda in linguaggio naturale..." required>
         <br><br>
+        <input type="text" name="model" value="gemma3:1b-it-qat" placeholder="Inserisci il nome del modello">
+        <br><br>
         <button type="submit">Cerca</button>
     </form>
 
