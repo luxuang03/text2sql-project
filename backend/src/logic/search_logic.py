@@ -14,12 +14,11 @@ def _normalize_question(q: str) -> str:
     - trim
     - collassa spazi multipli
     - lower
-    - rimuove punto finale (.)
+    - rimuove ".", "?" e "!"
     """
     q = " ".join(q.strip().split())
     q = q.lower()
-    if q.endswith("."):
-        q = q[:-1]
+    q = q.rstrip(".?!")
     return q
 
 
@@ -251,10 +250,11 @@ Domanda utente:
 Rispondi solo con la query SQL pura.
 """.strip()
 
-        sql_query = ask_ollama_for_sql(prompt, model=model)
-
+        raw_sql = ask_ollama_for_sql(prompt, model=model)
+        sql_query = _clean_llm_sql_output(raw_sql)
+        
         sql_result = run_sql_search(sql_query)
-
+        
         return {
             "sql": sql_query,
             "sql_validation": sql_result["sql_validation"],
