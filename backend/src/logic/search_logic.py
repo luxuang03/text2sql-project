@@ -58,6 +58,21 @@ def _make_item(item_type: str, name: str) -> Dict:
         ],
     }
 
+def _clean_llm_sql_output(raw_sql: str) -> str:
+    sql = raw_sql.strip()
+
+    sql = sql.replace("```sql", "").replace("```", "").strip()
+
+    # prendi solo dalla prima SELECT
+    idx = sql.lower().find("select")
+    if idx != -1:
+        sql = sql[idx:]
+
+    # taglia dopo il primo ;
+    if ";" in sql:
+        sql = sql.split(";", 1)[0] + ";"
+
+    return sql.strip()
 
 def handle_search(question: str) -> List[Dict]:
     """
