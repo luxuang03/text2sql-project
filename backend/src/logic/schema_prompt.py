@@ -32,4 +32,10 @@ def get_schema_for_llm(conn):
         cols = ", ".join(tables[table_name])
         lines.append(f"{table_name}({cols})")
 
-    return "\n".join(lines)
+    relations = [
+        "movies.regista_id -> directors.id",
+        "movie_platforms.movie_id -> movies.id",
+        "movie_platforms.platform_id -> platforms.id",
+    ]
+
+    return "\n".join(lines) + "\n\nRelazioni:\n" + "\n".join(relations)
