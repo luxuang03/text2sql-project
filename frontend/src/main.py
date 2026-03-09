@@ -98,6 +98,49 @@ def search(request: Request, question: str = Form(...)):
             }
         )
 
+ 
+@app.post("/search_with_llm", response_class=HTMLResponse)
+def search_with_llm(request: Request, question: str = Form(...)):
+
+    try:
+        r = requests.post(
+            f"{BACKEND_URL}/search",
+            json={
+                "question": question,
+                "model": "gemma3:1b-it-qat"
+            },
+            timeout=120
+        )
+
+        r.raise_for_status()
+        data = r.json()
+
+        return templates.TemplateResponse(
+            "search_with_llm.html",
+            {
+                "request": request,
+                "question": question,
+                "sql": data.get("sql"),
+                "sql_validation": data.get("sql_validation"),
+                "results": data.get("results"),
+                "error": None
+            }
+        )
+
+    except Exception as e:
+
+        return templates.TemplateResponse(
+            "search_with_llm.html",
+            {
+                "request": request,
+                "question": question,
+                "sql": None,
+                "sql_validation": None,
+                "results": None,
+                "error": str(e)
+            }
+        )
+
 
 @app.post("/add", response_class=HTMLResponse)
 def add(request: Request, data_line: str = Form(...)):
