@@ -19,7 +19,7 @@ def get_connection() -> mariadb.Connection:
             password=DB_PASSWORD,
             database=DB_NAME,
         )
-        conn.autocommit = True
+        conn.autocommit = False
         return conn
     except mariadb.Error as e:
         print(f"[db] Errore connessione MariaDB: {e}")
@@ -41,17 +41,3 @@ def execute_select(query: str, params: tuple | None = None) -> list[tuple]:
     finally:
         conn.close()
 
-
-# Esegue insert/update/delete
-def execute_modify(query: str, params: tuple | None = None) -> None:
-    if params is None:
-        params = ()
-
-    conn = get_connection()
-    try:
-        cur = conn.cursor()
-        cur.execute(query, params)
-        conn.commit()
-        cur.close()
-    finally:
-        conn.close()
