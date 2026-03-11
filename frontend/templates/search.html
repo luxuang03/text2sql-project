@@ -100,46 +100,44 @@
         }
     </style>
 </head>
+
 <body>
+    <div class="container">
+        <h1>Risultati ricerca</h1>
+        <a href="/">Torna alla Home</a>
 
-<div class="container">
-    <h1>Risultati ricerca</h1>
+        <form action="/search" method="post">
+            <input type="text" name="question" size="80" value="{{ question }}" placeholder="Inserisci una domanda supportata..." required>
+            <br><br>
+            <button type="submit">Cerca</button>
+        </form>
 
-    <a href="/">Torna alla Home</a>
-
-    <form action="/search" method="post">
-        <input type="text" name="question" size="80" value="{{ question }}" placeholder="Inserisci una domanda supportata..." required>
-        <br><br>
-        <button type="submit">Cerca</button>
-    </form>
-
-    {% if error %}
-    <p class="error">{{ error }}</p>
-    {% endif %}
-    
-    {% if results and results|length > 0 %}
-    <table>
-        <thead>
-            <tr>
-                {% for p in results[0].properties %}
-                <th>{{ p.property_name | capitalize }}</th>
-                {% endfor %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in results %}
-            <tr>
-                {% for p in item.properties %}
-                <td>{{ p.property_value }}</td>
-                {% endfor %}
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-    <p class="empty-message">Nessun risultato.</p>
-    {% endif %}
-</div>
-
+        {% if error %}
+        <p class="error">{{ error }}</p>
+        {% endif %}
+        
+        {% if results and results|length > 0 %}
+            <table>
+                <thead>
+                    <tr>
+                        {% for p in results[0].properties %}
+                        <th>{{ p.property_name | capitalize }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in results %}
+                    <tr>
+                        {% for p in item.properties %}
+                        <td>{{ p.property_value }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="empty-message">Nessun risultato.</p>
+        {% endif %}
+    </div>
 </body>
 </html>

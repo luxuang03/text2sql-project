@@ -3,7 +3,6 @@
 <head>
     <meta charset="utf-8">
     <title>Add</title>
-
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -79,34 +78,28 @@
             margin: 20px 0;
         }
     </style>
-
 </head>
+
 <body>
+    <div class="container">
+        <h1>Risultato Add</h1>
+        <a href="/">Torna alla Home</a>
+        <hr>
 
-<div class="container">
+        {% if ok %}
+        <p class="success">Operazione riuscita (status {{ status }})</p>
+        {% else %}
+        <p class="error">Errore (status {{ status }})</p>
+        {% endif %}
 
-<h1>Risultato Add</h1>
-<a href="/">Torna alla Home</a>
+        <pre>{{ body }}</pre>
+        <hr>
 
-<hr>
-
-{% if ok %}
-<p class="success">Operazione riuscita (status {{ status }})</p>
-{% else %}
-<p class="error">Errore (status {{ status }})</p>
-{% endif %}
-
-<pre>{{ body }}</pre>
-
-<hr>
-
-<form action="/add" method="post">
-    <textarea name="data_line" rows="4" placeholder="Inserisci una riga di dati separata da virgole..."></textarea>
-    <br><br>
-    <button type="submit">Invia un'altra riga</button>
-</form>
-
-</div>
-
+        <form action="/add" method="post">
+            <textarea name="data_line" rows="4" placeholder="Inserisci una riga di dati separata da virgole..."></textarea>
+            <br><br>
+            <button type="submit">Invia un'altra riga</button>
+        </form>
+    </div>
 </body>
 </html>

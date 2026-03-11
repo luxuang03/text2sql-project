@@ -6,7 +6,6 @@ from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
-# URL backend DENTRO Docker
 BACKEND_URL = os.getenv("BACKEND_URL", "http://backend:8000").rstrip("/")
 
 app = FastAPI()
@@ -15,10 +14,7 @@ templates = Jinja2Templates(directory="templates")
 
 @app.get("/", response_class=HTMLResponse)
 def index(request: Request):
-    return templates.TemplateResponse(
-        "index.html",
-        {"request": request}
-    )
+    return templates.TemplateResponse("index.html", {"request": request})
 
 
 @app.get("/schema", response_class=HTMLResponse)
@@ -27,30 +23,19 @@ def schema(request: Request):
         r = requests.get(f"{BACKEND_URL}/schema_summary", timeout=10)
         r.raise_for_status()
         schema = r.json()
-        return templates.TemplateResponse(
-            "schema.html",
-            {"request": request, "schema": schema}
-        )
+        return templates.TemplateResponse("schema.html", {"request": request, "schema": schema})
+    
     except Exception as e:
-        return templates.TemplateResponse(
-            "schema.html",
-            {"request": request, "schema": [], "error": str(e)}
-        )
+        return templates.TemplateResponse("schema.html", {"request": request, "schema": [], "error": str(e)})
         
 
 @app.post("/sql_search", response_class=HTMLResponse)
 def sql_search(request: Request, sql_query: str = Form(...)):
     try:
-        r = requests.post(
-            f"{BACKEND_URL}/sql_search",
-            json={"sql_query": sql_query},
-            timeout=10
-        )
+        r = requests.post(f"{BACKEND_URL}/sql_search", json={"sql_query": sql_query}, timeout=10)
         r.raise_for_status()
         data = r.json()
-
-        return templates.TemplateResponse(
-            "sql_search.html",
+        return templates.TemplateResponse("sql_search.html",
             {
                 "request": request,
                 "sql_query": sql_query,
@@ -60,8 +45,7 @@ def sql_search(request: Request, sql_query: str = Form(...)):
             }
         )
     except Exception as e:
-        return templates.TemplateResponse(
-            "sql_search.html",
+        return templates.TemplateResponse("sql_search.html",
             {
                 "request": request,
                 "sql_query": sql_query,
@@ -79,8 +63,7 @@ def search(request: Request, question: str = Form(...)):
         r = requests.get(f"{BACKEND_URL}/search/{q}", timeout=10)
         r.raise_for_status()
         results = r.json()
-        return templates.TemplateResponse(
-            "search.html",
+        return templates.TemplateResponse("search.html",
             {
                 "request": request,
                 "question": question,
@@ -88,8 +71,7 @@ def search(request: Request, question: str = Form(...)):
             }
         )
     except Exception as e:
-        return templates.TemplateResponse(
-            "search.html",
+        return templates.TemplateResponse("search.html",
             {
                 "request": request,
                 "question": question,
@@ -101,22 +83,17 @@ def search(request: Request, question: str = Form(...)):
  
 @app.post("/search_with_llm", response_class=HTMLResponse)
 def search_with_llm(request: Request, question: str = Form(...)):
-
     try:
-        r = requests.post(
-            f"{BACKEND_URL}/search",
+        r = requests.post(f"{BACKEND_URL}/search",
             json={
                 "question": question,
                 "model": "gemma3:1b-it-qat"
             },
             timeout=120
         )
-
         r.raise_for_status()
         data = r.json()
-
-        return templates.TemplateResponse(
-            "search_with_llm.html",
+        return templates.TemplateResponse("search_with_llm.html",
             {
                 "request": request,
                 "question": question,
@@ -126,11 +103,8 @@ def search_with_llm(request: Request, question: str = Form(...)):
                 "error": None
             }
         )
-
     except Exception as e:
-
-        return templates.TemplateResponse(
-            "search_with_llm.html",
+        return templates.TemplateResponse("search_with_llm.html",
             {
                 "request": request,
                 "question": question,
@@ -145,15 +119,9 @@ def search_with_llm(request: Request, question: str = Form(...)):
 @app.post("/add", response_class=HTMLResponse)
 def add(request: Request, data_line: str = Form(...)):
     try:
-        r = requests.post(
-            f"{BACKEND_URL}/add",
-            json={"data_line": data_line},
-            timeout=10
-        )
-
+        r = requests.post(f"{BACKEND_URL}/add", json={"data_line": data_line}, timeout=10)
         if r.status_code == 200:
-            return templates.TemplateResponse(
-                "add.html",
+            return templates.TemplateResponse("add.html",
                 {
                     "request": request,
                     "ok": True,
@@ -162,8 +130,7 @@ def add(request: Request, data_line: str = Form(...)):
                 }
             )
         else:
-            return templates.TemplateResponse(
-                "add.html",
+            return templates.TemplateResponse("add.html",
                 {
                     "request": request,
                     "ok": False,
@@ -172,8 +139,7 @@ def add(request: Request, data_line: str = Form(...)):
                 }
             )
     except Exception as e:
-        return templates.TemplateResponse(
-            "add.html",
+        return templates.TemplateResponse("add.html",
             {
                 "request": request,
                 "ok": False,

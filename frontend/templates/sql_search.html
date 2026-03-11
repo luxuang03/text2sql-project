@@ -44,6 +44,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <a href="/">Torna alla Home</a>
@@ -52,19 +53,19 @@
         <h2>Risultati della ricerca</h2>
 
         <table>
-        <tbody>
-        {% for item in results %}
-        <tr>
-            {% for prop in item.properties %}
-                <td>{{ prop.property_value }}</td>
+            <tbody>
+            {% for item in results %}
+                <tr>
+                    {% for prop in item.properties %}
+                        <td>{{ prop.property_value }}</td>
+                    {% endfor %}
+                </tr>
             {% endfor %}
-        </tr>
-        {% endfor %}
-        </tbody>
+            </tbody>
         </table>
 
         {% else %}
-        <p>Nessun risultato trovato.</p>
+            <p>Nessun risultato trovato.</p>
         {% endif %}
     </div>
 </body>

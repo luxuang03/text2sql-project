@@ -132,64 +132,62 @@
         }
     </style>
 </head>
+
 <body>
+    <div class="container">
+        <h1>Risultati ricerca con LLM</h1>
+        <a href="/">Torna alla Home</a>
 
-<div class="container">
-    <h1>Risultati ricerca con LLM</h1>
+        <form action="/search_with_llm" method="post">
+            <input type="text" name="question" size="80" value="{{ question }}" placeholder="Inserisci una domanda in linguaggio naturale..." required>
+            <br><br>
+            <input type="text" name="model" value="gemma3:1b-it-qat" placeholder="Inserisci il nome del modello">
+            <br><br>
+            <button type="submit">Cerca</button>
+        </form>
 
-    <a href="/">Torna alla Home</a>
-
-    <form action="/search_with_llm" method="post">
-        <input type="text" name="question" size="80" value="{{ question }}" placeholder="Inserisci una domanda in linguaggio naturale..." required>
-        <br><br>
-        <input type="text" name="model" value="gemma3:1b-it-qat" placeholder="Inserisci il nome del modello">
-        <br><br>
-        <button type="submit">Cerca</button>
-    </form>
-
-    {% if error %}
-    <p class="error">{{ error }}</p>
-    {% endif %}
-
-    {% if sql is not none %}
-    <div class="info-box sql-box">
-        <h2>SQL generato</h2>
-        <pre>{{ sql }}</pre>
-    </div>
-    {% endif %}
-
-    {% if sql_validation is not none %}
-    <div class="info-box">
-        <h2>Validazione SQL</h2>
-        <p class="{{ sql_validation }}">{{ sql_validation }}</p>
-    </div>
-    {% endif %}
-
-    {% if results and results|length > 0 %}
-    <table>
-        <thead>
-            <tr>
-                {% for p in results[0].properties %}
-                <th>{{ p.property_name | capitalize }}</th>
-                {% endfor %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in results %}
-            <tr>
-                {% for p in item.properties %}
-                <td>{{ p.property_value }}</td>
-                {% endfor %}
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-        {% if results is not none %}
-        <p class="empty-message">Nessun risultato.</p>
+        {% if error %}
+            <p class="error">{{ error }}</p>
         {% endif %}
-    {% endif %}
-</div>
 
+        {% if sql is not none %}
+            <div class="info-box sql-box">
+                <h2>SQL generato</h2>
+                <pre>{{ sql }}</pre>
+            </div>
+        {% endif %}
+
+        {% if sql_validation is not none %}
+            <div class="info-box">
+                <h2>Validazione SQL</h2>
+                <p class="{{ sql_validation }}">{{ sql_validation }}</p>
+            </div>
+        {% endif %}
+
+        {% if results and results|length > 0 %}
+            <table>
+                <thead>
+                    <tr>
+                        {% for p in results[0].properties %}
+                        <th>{{ p.property_name | capitalize }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in results %}
+                    <tr>
+                        {% for p in item.properties %}
+                        <td>{{ p.property_value }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            {% if results is not none %}
+                <p class="empty-message">Nessun risultato.</p>
+            {% endif %}
+        {% endif %}
+    </div>
 </body>
 </html>
