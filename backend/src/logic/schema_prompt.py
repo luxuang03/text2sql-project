@@ -1,6 +1,7 @@
 import os
 
 
+# Restituisce lo schema dinamico da passare ad Ollama (da information_schema)
 def get_schema_for_llm(conn):
     db_name = os.getenv("DB_NAME", "movies_db")
 

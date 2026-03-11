@@ -94,7 +94,7 @@ def handle_search(question: str) -> List[Dict]:
     }
     """
 
-    original_question = question
+    
     q_norm = _normalize_question(question)
 
 
@@ -197,8 +197,7 @@ def handle_search(question: str) -> List[Dict]:
 
 
 
-# Logica della POST /Search
-
+# Manda un prompt ad Ollama contenente lo schema dinamico e la domanda dell'utente e restituisce la query generata, la validazione della query ed il risultato della query
 def search_with_llm(question: str, model: str | None = None):
     conn = get_connection()
     try:

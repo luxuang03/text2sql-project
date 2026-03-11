@@ -2,13 +2,8 @@ import os
 from ..db import execute_select
 
 
+# Restituisce tutte le tabelle e colonne del database movies_db come lista di dizionari con chiavi
 def get_schema() -> list[dict]:
-    """
-    Restituisce tutte le tabelle e colonne del database movies_db
-    come lista di dizionari con chiavi:
-    - table_name
-    - table_column   <-- NOME RICHIESTO DAL TEST
-    """
     db_name = os.getenv("DB_NAME", "movies_db")
     
     query = """
@@ -25,7 +20,7 @@ def get_schema() -> list[dict]:
         result.append(
             {
                 "table_name": table_name,
-                "table_column": column_name,  # <-- QUI IL NOME CORRETTO
+                "table_column": column_name, 
             }
         )
 

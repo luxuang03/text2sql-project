@@ -18,10 +18,6 @@ from .logic.llm_client import ensure_ollama_model
 
 
 def _is_movies_table_empty() -> bool:
-    """
-    True se la tabella movies è vuota, False se contiene almeno un record.
-    Solleva eccezioni se il DB non è raggiungibile o la tabella non esiste ancora.
-    """
     conn = get_connection()
     try:
         cur = conn.cursor()
@@ -34,22 +30,16 @@ def _is_movies_table_empty() -> bool:
 
 
 def populate_db_on_startup():
-    """
-    Popola il database leggendo backend/src/data.tsv, ma SOLO se movies è vuota.
-    Include un retry perché MariaDB/tabelle potrebbero non essere pronte al primo colpo.
-    """
-    # Retry DB/tabelle pronte
     ready = False
     last_err = None
-    for _ in range(30):  # ~30 secondi
+    for _ in range(30):
         try:
             empty = _is_movies_table_empty()
-            # se la query è riuscita, DB/tabelle sono pronti
             ready = True
             if not empty:
                 print("[startup] DB già popolato (movies non vuota). Skip popolamento.")
                 return
-            break  # tabella pronta e vuota -> procedo a popolare
+            break  # tabella vuota
         except Exception as e:
             last_err = e
             print(f"[startup] DB non pronto: {e}")
@@ -59,7 +49,6 @@ def populate_db_on_startup():
         print(f"[startup] DB non pronto dopo retry. Ultimo errore: {last_err}")
         return
 
-    # Percorso data.tsv (stessa cartella di main.py)
     tsv_path = Path(__file__).parent / "data.tsv"
     if not tsv_path.exists():
         print(f"[startup] data.tsv non trovato in {tsv_path}")
@@ -127,9 +116,9 @@ def search_path(question: str):
 
 
 @app.post("/add", response_model=AddResponse)
-def add(payload: AddRequest):   # oppure payload: dict = Body(...)
+def add(payload: AddRequest):
     try:
-        handle_add(payload.data_line)  # se dict: payload["data_line"] / payload.get(...)
+        handle_add(payload.data_line)
         return {"status": "ok"}
     except AddLineFormatError as e:
         raise HTTPException(status_code=422, detail=str(e))

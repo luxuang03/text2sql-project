@@ -9,7 +9,7 @@ OLLAMA_CHAT_URL = f"{OLLAMA_BASE_URL}/api/chat"
 OLLAMA_TAGS_URL = f"{OLLAMA_BASE_URL}/api/tags"
 OLLAMA_PULL_URL = f"{OLLAMA_BASE_URL}/api/pull"
 
-
+# Si assicura che Ollama sia raggiungibile
 def wait_for_ollama_ready(timeout_seconds: int = 180) -> None:
     start = time.time()
     last_error = None
@@ -25,7 +25,7 @@ def wait_for_ollama_ready(timeout_seconds: int = 180) -> None:
 
     raise RuntimeError(f"Ollama non raggiungibile entro {timeout_seconds}s: {last_error}")
 
-
+# Controlla che il modello richiesto (quello di default nel nostro caso) si già disponibile
 def is_model_available(model_name: str) -> bool:
     response = requests.get(OLLAMA_TAGS_URL, timeout=10)
     response.raise_for_status()
@@ -36,7 +36,7 @@ def is_model_available(model_name: str) -> bool:
             return True
     return False
 
-
+# Scarica il modello di Ollama
 def pull_model(model_name: str) -> None:
     response = requests.post(
         OLLAMA_PULL_URL,
@@ -44,7 +44,7 @@ def pull_model(model_name: str) -> None:
     )
     response.raise_for_status()
 
-
+# Verifica che Ollama sia raggiungibile e scarica il modello se manca
 def ensure_ollama_model(model_name: str = DEFAULT_OLLAMA_MODEL) -> None:
     wait_for_ollama_ready()
 
@@ -55,7 +55,7 @@ def ensure_ollama_model(model_name: str = DEFAULT_OLLAMA_MODEL) -> None:
     else:
         print(f"[startup] Modello {model_name} già disponibile.")
 
-
+# Manda ad Ollama la richiesta di generazione della query sql
 def ask_ollama_for_sql(prompt: str, model: str | None = None) -> str:
 
     ollama_url = os.getenv("OLLAMA_URL", "http://ollama:11434/api/chat")
